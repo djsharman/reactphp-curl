@@ -2,40 +2,45 @@
 
 namespace KHR\React\Curl;
 
+use MCurl\Client;
+use React\EventLoop\LoopInterface;
+use React\EventLoop\TimerInterface;
 use \React\Promise\Deferred;
 use \React\Promise\Promise;
 
 class Curl {
 
     /**
-     * @var \React\EventLoop\LoopInterface
+     * @var LoopInterface
      */
-    public $loop;
+    private $loop;
 
     /**
-     * @var \React\EventLoop\Timer\TimerInterface
+     * @var TimerInterface
      */
-    public $loop_timer;
-
+    private $loop_timer;
 
     /**
-     * @var \MCurl\Client
+     * @var Client
      */
-    public $client;
+    private $client;
 
     /**
      * Timeout: check curl resource
      * @var float
      */
-    public $timeout = 0.01;
+    private $timeout = 0.01;
 
-
-
-    public function __construct($loop) {
+    public function __construct($loop, Client $client=null) {
         $this->loop = $loop;
-        $this->client = new \MCurl\Client();
-        $this->client->isSelect(false);
-        $this->client->setClassResult('\\KHR\\React\Curl\\Result');
+
+        if($client == null) {
+            $client = new Client();
+            $client->isSelect(false);
+            $client->setClassResult('\\KHR\\React\Curl\\Result');
+        }
+
+        $this->client = $client;
     }
 
     /**
@@ -74,14 +79,14 @@ class Curl {
     }
 
     public function run() {
-        $client = $this->client;
-        $client->run();
+        $Client = $this->client;
+        $Client->run();
 
-        while($client->has()) {
+        while($Client->has()) {
             /**
              * @var Result $result
              */
-            $result = $client->next();
+            $result = $Client->next();
             $deferred = $result->shiftDeferred();
 
             if (!$result->hasError()) {
@@ -95,10 +100,19 @@ class Curl {
             $this->loop_timer = $this->loop->addPeriodicTimer($this->timeout, function() {
                 $this->run();
                 if (!($this->client->run() || $this->client->has())) {
-                    $this->loop_timer->cancel();
+                    $this->loop->cancelTimer($this->loop_timer);
                     $this->loop_timer = null;
                 }
             });
         }
     }
+
+    /**
+     * @return Client
+     */
+    public function getClient() {
+        return $this->client;
+    }
+
+
 }
