@@ -1,5 +1,5 @@
 {
-    "name": "khr/react-curl",
+    "name": "djsharman/react-curl",
     "description": "multi curl driver for reactphp.",
     "keywords": ["mysql", "php", "multi", "curl"],
     "license": "None",
@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "KHR\\React\\Curl\\": "src"
+            "djsharman\\React\\Curl\\": "src"
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace KHR\React\Curl;
+namespace djsharman\React\Curl;
 
 use MCurl\Client;
 use React\EventLoop\LoopInterface;

@@ -1,16 +1,25 @@
 <?php
 
-namespace KHR\React\Curl;
+namespace djsharman\React\Curl;
 
 
 class Exception extends \RuntimeException {
     /**
      * @var \MCurl\Result
      */
-    public $result;
+    private $result;
 
     public function __construct(\MCurl\Result $result) {
         $this->result = $result;
         parent::__construct($result->getError(), $result->getErrorCode());
     }
+
+    /**
+     * @return \MCurl\Result
+     */
+    public function getResult() {
+        return $this->result;
+    }
+
+
 }

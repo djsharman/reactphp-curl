@@ -1,8 +1,8 @@
 <?php
 
 use \React\EventLoop\Factory;
-use \KHR\React\Curl\Curl;
-use \KHR\React\Curl\Exception;
+use \djsharman\React\Curl\Curl;
+use \djsharman\React\Curl\Exception;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -12,7 +12,8 @@ $cb_ok = function(MCurl\Result $result){
 };
 
 $cb_err = function(Exception $e){
-    echo $e->result->info['url'], "\t", $e->getMessage(), PHP_EOL;
+    $result = $e->getResult();
+    echo $result->info['url'], "\t", $e->getMessage(), PHP_EOL;
 };
 
 
@@ -20,9 +21,11 @@ $loop = Factory::create();
 $curl = new Curl($loop);
 
 // Config
-$curl->client->setMaxRequest(3);
-$curl->client->setSleep(6, 1.0, false); // 6 request in 1 second
-$curl->client->setCurlOption([CURLOPT_AUTOREFERER => true, CURLOPT_COOKIE => 'fruit=apple; colour=red']); // default options
+$client = $curl->getClient();
+
+$client->setMaxRequest(3);
+$client->setSleep(6, 1.0, false); // 6 request in 1 second
+$client->setCurlOption([CURLOPT_AUTOREFERER => true, CURLOPT_COOKIE => 'fruit=apple; colour=red']); // default options
 
 // More config $curl->client show https://github.com/KhristenkoYura/multicurl
 // endconfig
